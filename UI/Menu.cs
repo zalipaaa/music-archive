@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using MusicArchive.Models;
 using MusicArchive.Services;
 
@@ -267,12 +270,12 @@ namespace MusicArchive.UI
 
         private void DisplaySongs(List<Song> songs)
         {
-            Console.WriteLine("  ╔═════════════════════════════════════════════════════════════════╗");
+            Console.WriteLine("  ╔════════════════════════════════════════════════════════════════════════════╗");
             foreach (var song in songs)
             {
                 Console.WriteLine($"  {song}");
             }
-            Console.WriteLine("  ╚═════════════════════════════════════════════════════════════════╝");
+            Console.WriteLine("  ╚════════════════════════════════════════════════════════════════════════════╝");
         }
 
         private void DisplaySearchResults(List<Song> results, string searchType)
