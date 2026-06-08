@@ -19,19 +19,20 @@ namespace MusicArchive.UI
             while (running)
             {
                 Console.Clear();
-                Console.WriteLine("════════════════════════════════════════");
-                Console.WriteLine("    🎵 МУЗЫКАЛЬНЫЙ АРХИВ 🎵");
-                Console.WriteLine("════════════════════════════════════════");
-                Console.WriteLine("1. Добавить песню");
-                Console.WriteLine("2. Удалить песню");
-                Console.WriteLine("3. Показать все песни");
-                Console.WriteLine("4. Поиск по названию");
-                Console.WriteLine("5. Поиск по исполнителю");
-                Console.WriteLine("6. Поиск по жанру");
-                Console.WriteLine("7. Поиск по году");
-                Console.WriteLine("8. Выход");
-                Console.WriteLine("════════════════════════════════════════");
-                Console.Write("Выберите опцию: ");
+                Console.WriteLine("╔════════════════════════════════════════╗");
+                Console.WriteLine("║       🎵 МУЗЫКАЛЬНЫЙ АРХИВ 🎵          ║");
+                Console.WriteLine("╚════════════════════════════════════════╝");
+                Console.WriteLine();
+                Console.WriteLine("  1. ➕ Добавить песню");
+                Console.WriteLine("  2. ➖ Удалить песню");
+                Console.WriteLine("  3. 📋 Показать все песни");
+                Console.WriteLine("  4. 🔍 Поиск по названию");
+                Console.WriteLine("  5. 🎤 Поиск по исполнителю");
+                Console.WriteLine("  6. 🎼 Поиск по жанру");
+                Console.WriteLine("  7. 📅 Поиск по году");
+                Console.WriteLine("  8. ❌ Выход");
+                Console.WriteLine();
+                Console.Write("  Выберите опцию (1-8): ");
 
                 string? choice = Console.ReadLine();
 
@@ -60,17 +61,12 @@ namespace MusicArchive.UI
                         break;
                     case "8":
                         running = false;
-                        Console.WriteLine("\nДо свидания! 👋");
+                        Console.WriteLine("\n  До свидания! 👋\n");
                         break;
                     default:
-                        Console.WriteLine("✗ Неверная опция!");
+                        Console.WriteLine("\n  ✗ Неверная опция! Пожалуйста, выберите 1-8.");
+                        PauseMenu();
                         break;
-                }
-
-                if (running && choice != "3" && choice != "4" && choice != "5" && choice != "6" && choice != "7")
-                {
-                    Console.WriteLine("\nНажмите Enter для продолжения...");
-                    Console.ReadLine();
                 }
             }
         }
@@ -78,26 +74,27 @@ namespace MusicArchive.UI
         private void AddSong()
         {
             Console.Clear();
-            Console.WriteLine("═══════════════════════════════════════");
-            Console.WriteLine("    ДОБАВИТЬ НОВУЮ ПЕСНЮ");
-            Console.WriteLine("═══════════════════════════════════════");
+            Console.WriteLine("╔════════════════════════════════════════╗");
+            Console.WriteLine("║      ➕ ДОБАВИТЬ НОВУЮ ПЕСНЮ           ║");
+            Console.WriteLine("╚════════════════════════════════════════╝");
+            Console.WriteLine();
 
-            Console.Write("Название песни: ");
+            Console.Write("  Название песни: ");
             string? title = Console.ReadLine();
 
-            Console.Write("Исполнитель: ");
+            Console.Write("  Исполнитель: ");
             string? artist = Console.ReadLine();
 
-            Console.Write("Альбом: ");
+            Console.Write("  Альбом: ");
             string? album = Console.ReadLine();
 
-            Console.Write("Год выпуска: ");
+            Console.Write("  Год выпуска: ");
             int year = int.TryParse(Console.ReadLine(), out int y) ? y : DateTime.Now.Year;
 
-            Console.Write("Жанр: ");
+            Console.Write("  Жанр: ");
             string? genre = Console.ReadLine();
 
-            Console.Write("Длительность (в секундах): ");
+            Console.Write("  Длительность (в секундах): ");
             int duration = int.TryParse(Console.ReadLine(), out int d) ? d : 0;
 
             if (!string.IsNullOrWhiteSpace(title) && !string.IsNullOrWhiteSpace(artist))
@@ -106,9 +103,9 @@ namespace MusicArchive.UI
                 {
                     Title = title,
                     Artist = artist,
-                    Album = album ?? string.Empty,
+                    Album = album ?? "Unknown",
                     Year = year,
-                    Genre = genre ?? string.Empty,
+                    Genre = genre ?? "Unknown",
                     DurationSeconds = duration
                 };
 
@@ -116,161 +113,188 @@ namespace MusicArchive.UI
             }
             else
             {
-                Console.WriteLine("✗ Название и исполнитель обязательны!");
+                Console.WriteLine("\n  ✗ Название и исполнитель обязательны!");
             }
 
-            Console.WriteLine("\nНажмите Enter для продолжения...");
-            Console.ReadLine();
+            PauseMenu();
         }
 
         private void RemoveSong()
         {
             Console.Clear();
-            Console.WriteLine("═══════════════════════════════════════");
-            Console.WriteLine("    УДАЛИТЬ ПЕСНЮ");
-            Console.WriteLine("═══════════════════════════════════════");
+            Console.WriteLine("╔════════════════════════════════════════╗");
+            Console.WriteLine("║         ➖ УДАЛИТЬ ПЕСНЮ              ║");
+            Console.WriteLine("╚════════════════════════════════════════╝");
+            Console.WriteLine();
 
-            ShowAllSongs();
+            var songs = _repository.GetAllSongs();
+            if (songs.Count == 0)
+            {
+                Console.WriteLine("  Архив пуст! Нечего удалять.");
+                PauseMenu();
+                return;
+            }
 
-            Console.Write("\nВведите ID песни для удаления: ");
-            if (int.TryParse(Console.ReadLine(), out int id))
+            DisplaySongs(songs);
+
+            Console.WriteLine();
+            Console.Write("  Введите ID песни для удаления (0 для отмены): ");
+            if (int.TryParse(Console.ReadLine(), out int id) && id != 0)
             {
                 _repository.RemoveSong(id);
             }
+            else if (id == 0)
+            {
+                Console.WriteLine("  ℹ Отмена удаления.");
+            }
             else
             {
-                Console.WriteLine("✗ Неверный ID!");
+                Console.WriteLine("  ✗ Неверный ID!");
             }
 
-            Console.WriteLine("\nНажмите Enter для продолжения...");
-            Console.ReadLine();
+            PauseMenu();
         }
 
         private void ShowAllSongs()
         {
             Console.Clear();
-            Console.WriteLine("═══════════════════════════════════════");
-            Console.WriteLine("    ВСЕ ПЕСНИ В АРХИВЕ");
-            Console.WriteLine("═══════════════════════════════════════");
+            Console.WriteLine("╔════════════════════════════════════════╗");
+            Console.WriteLine("║       📋 ВСЕ ПЕСНИ В АРХИВЕ           ║");
+            Console.WriteLine("╚════════════════════════════════════════╝");
+            Console.WriteLine();
 
             var songs = _repository.GetAllSongs();
 
             if (!songs.Any())
             {
-                Console.WriteLine("Архив пуст! Добавьте первую песню.");
-                Console.WriteLine("\nНажмите Enter для продолжения...");
-                Console.ReadLine();
+                Console.WriteLine("  Архив пуст! Добавьте первую песню.");
+                PauseMenu();
                 return;
             }
 
-            foreach (var song in songs)
-            {
-                Console.WriteLine(song);
-            }
-
-            Console.WriteLine($"\nВсего песен: {songs.Count}");
-            Console.WriteLine("\nНажмите Enter для продолжения...");
-            Console.ReadLine();
+            DisplaySongs(songs);
+            Console.WriteLine();
+            Console.WriteLine($"  📊 Всего песен: {songs.Count}");
+            PauseMenu();
         }
 
         private void SearchByTitle()
         {
             Console.Clear();
-            Console.WriteLine("═══════════════════════════════════════");
-            Console.WriteLine("    ПОИСК ПО НАЗВАНИЮ");
-            Console.WriteLine("═══════════════════════════════════════");
+            Console.WriteLine("╔════════════════════════════════════════╗");
+            Console.WriteLine("║      🔍 ПОИСК ПО НАЗВАНИЮ             ║");
+            Console.WriteLine("╚════════════════════════════════════════╝");
+            Console.WriteLine();
 
-            Console.Write("Введите название или часть названия: ");
+            Console.Write("  Введите название или часть названия: ");
             string? title = Console.ReadLine();
 
             if (string.IsNullOrWhiteSpace(title))
             {
-                Console.WriteLine("✗ Введите название!");
+                Console.WriteLine("  ✗ Введите название!");
+                PauseMenu();
                 return;
             }
 
             var results = _repository.SearchByTitle(title);
-            DisplaySearchResults(results);
+            DisplaySearchResults(results, "Поиск по названию");
         }
 
         private void SearchByArtist()
         {
             Console.Clear();
-            Console.WriteLine("═══════════════════════════════════════");
-            Console.WriteLine("    ПОИСК ПО ИСПОЛНИТЕЛЮ");
-            Console.WriteLine("═══════════════════════════════════════");
+            Console.WriteLine("╔════════════════════════════════════════╗");
+            Console.WriteLine("║     🎤 ПОИСК ПО ИСПОЛНИТЕЛЮ           ║");
+            Console.WriteLine("╚════════════════════════════════════════╝");
+            Console.WriteLine();
 
-            Console.Write("Введите имя исполнителя: ");
+            Console.Write("  Введите имя исполнителя: ");
             string? artist = Console.ReadLine();
 
             if (string.IsNullOrWhiteSpace(artist))
             {
-                Console.WriteLine("✗ Введите имя исполнителя!");
+                Console.WriteLine("  ✗ Введите имя исполнителя!");
+                PauseMenu();
                 return;
             }
 
             var results = _repository.SearchByArtist(artist);
-            DisplaySearchResults(results);
+            DisplaySearchResults(results, "Поиск по исполнителю");
         }
 
         private void SearchByGenre()
         {
             Console.Clear();
-            Console.WriteLine("═══════════════════════════════════════");
-            Console.WriteLine("    ПОИСК ПО ЖАНРУ");
-            Console.WriteLine("═══════════════════════════════════════");
+            Console.WriteLine("╔════════════════════════════════════════╗");
+            Console.WriteLine("║        🎼 ПОИСК ПО ЖАНРУ              ║");
+            Console.WriteLine("╚════════════════════════════════════════╝");
+            Console.WriteLine();
 
-            Console.Write("Введите жанр: ");
+            Console.Write("  Введите жанр: ");
             string? genre = Console.ReadLine();
 
             if (string.IsNullOrWhiteSpace(genre))
             {
-                Console.WriteLine("✗ Введите жанр!");
+                Console.WriteLine("  ✗ Введите жанр!");
+                PauseMenu();
                 return;
             }
 
             var results = _repository.SearchByGenre(genre);
-            DisplaySearchResults(results);
+            DisplaySearchResults(results, "Поиск по жанру");
         }
 
         private void SearchByYear()
         {
             Console.Clear();
-            Console.WriteLine("═══════════════════════════════════════");
-            Console.WriteLine("    ПОИСК ПО ГОДУ");
-            Console.WriteLine("═══════════════════════════════════════");
+            Console.WriteLine("╔════════════════════════════════════════╗");
+            Console.WriteLine("║        📅 ПОИСК ПО ГОДУ               ║");
+            Console.WriteLine("╚════════════════════════════════════════╝");
+            Console.WriteLine();
 
-            Console.Write("Введите год: ");
+            Console.Write("  Введите год: ");
             if (int.TryParse(Console.ReadLine(), out int year))
             {
                 var results = _repository.SearchByYear(year);
-                DisplaySearchResults(results);
+                DisplaySearchResults(results, "Поиск по году");
             }
             else
             {
-                Console.WriteLine("✗ Введите корректный год!");
+                Console.WriteLine("  ✗ Введите корректный год!");
+                PauseMenu();
             }
         }
 
-        private void DisplaySearchResults(List<Song> results)
+        private void DisplaySongs(List<Song> songs)
         {
-            Console.WriteLine("═══════════════════════════════════════");
+            Console.WriteLine("  ╔═════════════════════════════════════════════════════════════════╗");
+            foreach (var song in songs)
+            {
+                Console.WriteLine($"  {song}");
+            }
+            Console.WriteLine("  ╚═════════════════════════════════════════════════════════════════╝");
+        }
 
+        private void DisplaySearchResults(List<Song> results, string searchType)
+        {
+            Console.WriteLine();
             if (!results.Any())
             {
-                Console.WriteLine("✗ Ничего не найдено!");
+                Console.WriteLine($"  ✗ По запросу '{searchType}' ничего не найдено!");
             }
             else
             {
-                Console.WriteLine($"Найдено {results.Count} результатов:");
-                Console.WriteLine("─────────────────────────────────────");
-                foreach (var song in results)
-                {
-                    Console.WriteLine(song);
-                }
+                Console.WriteLine($"  ✓ Найдено {results.Count} результатов:");
+                Console.WriteLine();
+                DisplaySongs(results);
             }
+            PauseMenu();
+        }
 
-            Console.WriteLine("\nНажмите Enter для продолжения...");
+        private void PauseMenu()
+        {
+            Console.WriteLine();
+            Console.Write("  Нажмите Enter для продолжения...");
             Console.ReadLine();
         }
     }

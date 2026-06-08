@@ -4,10 +4,11 @@ obj/
 .vscode/
 *.user
 *.suo
-*.sln.docstates
+*.sln.docstyles
 *.csproj.user
 packages/
 .DS_Store
 *.db
 *.json
-!songs.json
+node_modules/
+.idea/
