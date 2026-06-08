@@ -1,0 +1,13 @@
+bin/
+obj/
+.vs/
+.vscode/
+*.user
+*.suo
+*.sln.docstates
+*.csproj.user
+packages/
+.DS_Store
+*.db
+*.json
+!songs.json
